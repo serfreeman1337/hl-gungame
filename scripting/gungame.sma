@@ -35,10 +35,10 @@
 #include <hamsandwich>
 
 #define PLUGIN "Half-Life GunGame"
-#define VERSION "2.1"
+#define VERSION "2.1.1"
 #define AUTHOR "serfreeman1337"	// ICQ: 50429042
 
-#define LASTUPDATE	"1, November (11), 2014"
+#define LASTUPDATE	"01, February (02), 2016"
 
 // Enable detection and usage of color codes in notify messages
 // This is only for AGHL.ru client.dll and RCD
@@ -720,7 +720,7 @@ new bool:ggActive
 
 public plugin_cfg(){
 	server_print("")
-	server_print("   Half-Life GunGame Copyright (c) 2014 %s",AUTHOR)
+	server_print("   Half-Life GunGame Copyright (c) 2016 %s",AUTHOR)
 	server_print("   Version %s build on %s", VERSION, LASTUPDATE)
 	server_print("")
 	
@@ -1393,11 +1393,13 @@ public load_cfg(){
 
 //#define возвращение_олова return
 
-#define ITEM_FLAG_SELECTONEMPTY       1
-#define ITEM_FLAG_NOAUTORELOAD        2
-#define ITEM_FLAG_NOAUTOSWITCHEMPTY   4
-#define ITEM_FLAG_LIMITINWORLD        8
-#define ITEM_FLAG_EXHAUSTIBLE        16
+#if !defined ITEM_FLAG_SELECTONEMPTY
+	#define ITEM_FLAG_SELECTONEMPTY       1
+	#define ITEM_FLAG_NOAUTORELOAD        2
+	#define ITEM_FLAG_NOAUTOSWITCHEMPTY   4
+	#define ITEM_FLAG_LIMITINWORLD        8
+	#define ITEM_FLAG_EXHAUSTIBLE        16
+#endif
 
 // parse weapon list
 public MSG_WeaponList(MsgDEST,MsgID,id){
@@ -1444,15 +1446,6 @@ public MSG_WeaponList(MsgDEST,MsgID,id){
 	weaponAmmo[WAMMO_PRIMARY_MAXAMMO] = get_msg_arg_int(argPrimaryAmmoMaxAmount)
 	weaponAmmo[WAMMO_SECONDARY_AMMOID] = get_msg_arg_int(argSecondaryAmmoId)
 	weaponAmmo[WAMMO_SECONDARY_MAXAMMO] = get_msg_arg_int(argSecondaryAmmoMaxAmount)
-	
-	/*server_print("---> %s %d %d %d %d",
-		weaponName,
-		weaponAmmo[WAMMO_PRIMARY_AMMOID],
-		weaponAmmo[WAMMO_PRIMARY_MAXAMMO],
-		weaponAmmo[WAMMO_SECONDARY_AMMOID],
-		weaponAmmo[WAMMO_SECONDARY_MAXAMMO]
-	)
-	*/
 	
 	// set ammo map
 	for(new i ;  i < 2; i++){
@@ -1807,8 +1800,8 @@ public Parse_WeaponSets(buffer[],lineCount,Trie:keyTrie,&Trie:hamHooks,bool:warm
 				arrayset(equipItem,0,equipStruct)
 				
 				formatex(equipItem[EQUIP_NAME],strlen(buffer) - 2,"%s",buffer[1])
-				equipItem[EQUIP_FULL_PRIMARY] = 1
-				equipItem[EQUIP_FULL_SECONDARY] = 1
+				equipItem[EQUIP_FULL_PRIMARY] = true
+				equipItem[EQUIP_FULL_SECONDARY] = true
 				equipItem[EQUIP_CLIP] = -1
 				
 				setBlockId = CFG_LEVEL_WEAPON
@@ -1824,8 +1817,8 @@ public Parse_WeaponSets(buffer[],lineCount,Trie:keyTrie,&Trie:hamHooks,bool:warm
 				arrayset(equipItem,0,equipStruct)
 				copy(equipItem[EQUIP_NAME],charsmax(equipItem[EQUIP_NAME]),buffer)
 				
-				equipItem[EQUIP_FULL_PRIMARY] = 1
-				equipItem[EQUIP_FULL_SECONDARY] = 1
+				equipItem[EQUIP_FULL_PRIMARY] = true
+				equipItem[EQUIP_FULL_SECONDARY] = true
 				equipItem[EQUIP_CLIP] = -1
 				
 				if(weaponSet[WSET_EQUIP_ITEMS] == Invalid_Array)
@@ -1922,15 +1915,9 @@ public Parse_WeaponSets(buffer[],lineCount,Trie:keyTrie,&Trie:hamHooks,bool:warm
 				RegisterHam(Ham_Killed,parseInf[0],"Inflictors_DestroyHandler",true)
 				RegisterHam(Ham_Use,parseInf[0],"Inflictors_DestroyHandler",true)
 				RegisterHam(Ham_TakeDamage,parseInf[0],"Inflictors_DamageHandler",false)
-				RegisterHam(Ham_Think,parseInf[0],"test")
 			}
 		}
 	}
-}
-
-public test(id)
-{
-	server_print("--> %d",id)
 }
 
 //
@@ -1943,10 +1930,10 @@ public client_putinserver(id){
 	arrayset(playersData[id],0,playersDataStruct)
 	playersData[id][PLAYER_LASTLEVEL] = -1
 	
-	Update_PlayersRanks()
+	Update_PlayersRanks(0)
 	currentPlayers = get_playersnum()
 	
-	playersData[id][PLAYER_BOT] = is_user_bot(id)
+	playersData[id][PLAYER_BOT] = bool:is_user_bot(id)
 	
 	if(!playersData[id][PLAYER_BOT]){
 		#if defined AGHL_COLOR && !defined CSCOLOR
@@ -2126,7 +2113,11 @@ public SetLevel_ForNewPlayer(id,handicap){
 //
 // Player disconnect
 //
+#if AMXX_VERSION_NUM < 183
 public client_disconnect(id){
+#else
+public client_disconnected(id){
+#endif
 	if(!ggActive)
 		return
 	
@@ -2141,7 +2132,7 @@ public client_disconnect(id){
 	#endif
 
 	currentPlayers --
-	Update_PlayersRanks()
+	Update_PlayersRanks(id)
 	
 	if(autoSaveTime && !playersData[id][PLAYER_BOT]){
 		new aSave[autoSaveStruct]
@@ -2300,7 +2291,7 @@ public On_PlayerKilled(victim,killer){
 	if(get_pcvar_num(cvar[CVAR_TEAMPLAY]))
 		Update_TeamData(killer)
 	
-	Update_PlayersRanks()
+	Update_PlayersRanks(0)
 	
 	return HAM_IGNORED
 }
@@ -2632,7 +2623,7 @@ public Equip_PlayerWithWeapon(const id){
 			weaponSet[WSET_ICONSPRITE]
 		)
 		
-		Update_PlayersRanks()
+		Update_PlayersRanks(0)
 		playersData[id][PLAYER_LASTLEVEL] = playersData[id][PLAYER_CURRENTLEVEL]
 	}
 	
@@ -3242,6 +3233,14 @@ public gg_notify_msg(id,notifyId){
 		#if defined CSCOLOR
 		client_print_color(id,chatTeamColor[teamId],message)
 		#else
+			#if defined AGHL_COLOR
+				// fix color message for amxx 183
+				if(playersData[id][PLAYER_AGHL])
+				{
+					replace_all(message,charsmax(message),"^^^^","^^")
+				}
+			#endif
+
 		client_print(id,print_chat,message)
 		#endif
 	}
@@ -3355,6 +3354,14 @@ public gg_notify_msg(id,notifyId){
 		#if defined CSCOLOR
 		client_print_color(player,chatTeamColor[teamId],message)
 		#else
+			#if defined AGHL_COLOR
+				// fix color message for amxx 183
+				if(playersData[player][PLAYER_AGHL])
+				{
+					replace_all(message,charsmax(message),"^^^^","^^")
+				}
+			#endif
+
 		client_print(player,print_chat,message)
 		#endif
 	}
@@ -3485,7 +3492,11 @@ public Inflictors_DestroyHandler(ent){
 	new classname[32],inflictorAmmo[weaponAmmoStruct]
 	entity_get_string(ent,EV_SZ_classname,classname,charsmax(classname))
 	
-	new owner = entity_get_edict(ent,EV_ENT_owner)
+	new owner = entity_get_int(ent,EV_INT_iuser3)	// lookup for real owner
+	
+	// lookup for current entity owner then
+	if(!owner)
+		owner = entity_get_edict(ent,EV_ENT_owner)
 	
 	if(!owner || owner > MaxClients || !is_user_connected(owner))
 		return HAM_IGNORED
@@ -3568,11 +3579,15 @@ public Inflictors_DestroyAll(id,Array:infArray){
 }
 
 // ranker
-public Update_PlayersRanks(){
+public Update_PlayersRanks(skip_id){
 	new players[32],pnum
 	get_players(players,pnum)
 	
-	SortCustom1D(players,pnum,"Sort_RankPos")
+	// sort down disconnected player
+	new sort_data[1]
+	sort_data[0] = skip_id
+	
+	SortCustom1D(players,pnum,"Sort_RankPos",sort_data,sizeof sort_data)
 	
 	for(new i,player ; i < pnum ; ++i){
 		player = players[i]
@@ -3589,10 +3604,13 @@ public Update_PlayersRanks(){
 	}
 }
 
-public Sort_RankPos(player1,player2){
-	if(playersData[player1][PLAYER_CURRENTLEVEL] > playersData[player2][PLAYER_CURRENTLEVEL])
+public Sort_RankPos(player1,player2,sort_array[],sort_data[],sort_data_size){
+	new skip_id = sort_data[0]
+	
+	// sort down disconnected players	
+	if(player2 == skip_id || playersData[player1][PLAYER_CURRENTLEVEL] > playersData[player2][PLAYER_CURRENTLEVEL])
 		return -1
-	else if(playersData[player1][PLAYER_CURRENTLEVEL] < playersData[player2][PLAYER_CURRENTLEVEL])
+	else if(player1 == skip_id || playersData[player1][PLAYER_CURRENTLEVEL] < playersData[player2][PLAYER_CURRENTLEVEL])
 		return 1
 	else if(playersData[player1][PLAYER_KILLS] > playersData[player2][PLAYER_KILLS])
 		return -1
