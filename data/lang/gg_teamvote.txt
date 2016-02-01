@@ -1,0 +1,19 @@
+[ru]
+MENU_TITLE = Выберите следующий режим игры
+MENU_DM = Каждый сам за себя
+MENU_TDM = Командная игра
+TIMELEFT = Осталось
+FORDM = режим FFA
+FORTDM = командный режим
+DMSELECT = Выбран режим FFA
+TDMSELECT = Выбран командный режим
+
+[en]
+MENU_TITLE = Vote for next game mode
+MENU_DM = FFA
+MENU_TDM = Team Play
+TIMELEFT = Time remaining
+FORDM = FFA
+FORTDM = Team Play
+DMSELECT = FFA mode selected
+TDMSELECT = Team Play mode selected

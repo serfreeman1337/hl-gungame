@@ -1,0 +1,122 @@
+[en]
+CHAT_TAG = ^4[GunGame]^1
+
+ANNOUNCEMENT = This server is running GunGame Mod. Guns are awarded by kills.
+ANNOUNCEMENT_HUD = This server is running GunGame Mod. Guns are awarded by kills.
+
+INFORMER = Weapon: <weapon> | Level: <level>/<maxlevel><samelevel> | Kills: <kills>/<needkills>^nRank: <rank> of <ranknum> | Leader: <leader> [ <lweapon> ]
+
+STATS_END_WINNER = %d. %s - Winner with %d frags
+STATS_END_PLAYER = %d. %s on level %d [%s - %d/%d] with %d frags
+
+LEVEL_SELF = ^3You^1 are now on level ^4%d^1 :: ^4%s^1
+LEVEL_SELF_LST = ^3You^1 reached the ^4last^1 level!
+WINNER_SELF = ^3You are the WINNER!!!^1
+
+LEVEL_NOW_MSG = ^3%s^1 now on ^4%d^1 :: ^4%s^1
+LEVEL_UP_MSG = ^3%s^1 went up to level ^4%d^1 :: ^4%s^1
+LEVEL_DOWN_MSG = ^3%s^1 went down to level ^4%d^1 :: ^4%s^1
+
+WINNER_MSG = ^3%s^4 is the WINNER!!!
+WINNER_HUD = %s is the WINNER ! Congratulations!
+
+WARMUP_ROUND_PREPARE = [ Game will start in %d seconds! ]
+WARMUP_ROUND_DISPLAY = [ Warmup Mode: %d seconds left ]
+WARMUP_ROUND_OVER = [ LIVE! ]
+
+REACHED_LAST_LEVEL = ^3%s^1 reached the last level!
+
+SKIP_LESSPLR = You skipped your current level because there are not enough players
+SKIP_MSG = %s skipped his current level and went up to level %d - %s
+
+TEAM_STR = Team
+TEAM_LEVELUP_O = Team ^%s^1 are now on level ^4%d^1 :: ^4%s^1
+TEAM_LEVELUP_T = ^3%s%1 gained level ^4%d^1 :: ^4%s^1 to us
+TEAM_LEVELUP_S = You gained level ^4%d^1 :: ^4%s^1 to your team
+TEAM_WIN_O = Team ^3%s^1 is the WINNER!!!
+TEAM_WIN_T = ^3%s^1 led us to victory!
+TEAM_WIN_S = You led your team to victory!
+TEAM_LAST_O = Team ^3%s^1 reached the last level!
+TEAM_LAST_S = Your team reached the last level!
+
+[ru]
+CHAT_TAG = ^4[GunGame]^1
+
+ANNOUNCEMENT = This server is running GunGame Mod. Guns are awarded by kills.
+ANNOUNCEMENT_HUD = This server is running GunGame Mod. Guns are awarded by kills.
+
+INFORMER = Оружие: <weapon> | Уровень: <level>/<maxlevel><samelevel> | Счет: <kills>/<needkills>^nРанк: <rank> из <ranknum> | Лидер: <leader> [ <lweapon> ]
+
+STATS_END_WINNER = %d. %s - Победитель с %d фрагами
+STATS_END_PLAYER = %d. %s на %d уровне [%s - %d/%d] с %d фрагами
+
+LEVEL_SELF = ^3Вы^1 перешли на уровень ^4%d^1 :: ^4%s^1
+LEVEL_SELF_LST = ^3Вы^1 достигли ^4последнего^1 уровня!
+WINNER_SELF = ^3Вы победитель!!!^1
+
+LEVEL_NOW_MSG = ^3%s^1 на уровне ^4%d^1 :: ^4%s^1
+LEVEL_UP_MSG = ^3%s^1 поднялся на уровень ^4%d^1 :: ^4%s^1
+LEVEL_DOWN_MSG = ^3%s^1 опустился на уровень ^4%d^1 :: ^4%s^1
+
+WINNER_MSG = ^3%s^4 ПОБЕДИТЕЛЬ!!!
+WINNER_HUD = %s ПОБЕДИТЕЛЬ ! ПОЗДРАВЛЯЕМ!
+
+WARMUP_ROUND_PREPARE = [ Игра начнется через %d секунд! ]
+WARMUP_ROUND_DISPLAY = [ Разминка: осталось %d секунд ]
+WARMUP_ROUND_OVER = [ НАЧАЛИ! ]
+
+REACHED_LAST_LEVEL = ^3%s^1 достиг последнего уровня!
+
+SKIP_LESSPLR = Вы пропустили ^3уровень^1 из-за ^4малого^1 числа игроков.
+SKIP_MSG = Из-за малого числа игроков ^3%s^1 перепрыгнул на уровень ^4%d^1 :: ^4%s^1.
+
+TEAM_STR = Команда
+TEAM_LEVELUP_O = Команда ^3%s^1 перешла на уровень  ^4%d^1 :: ^4%s^1
+TEAM_LEVELUP_T = ^3%s^1 принёс уровень ^4%d^1 :: ^4%s^1 вашей команде
+TEAM_LEVELUP_S = Вы принесли уровень ^4%d^1 :: ^4%s^1 вашей команде
+TEAM_WIN_O = Команда ^3%s^1 победитель!
+TEAM_WIN_T = ^3%s^1 принёс победу вышей команде!
+TEAM_WIN_S = Вы принесли победу вышей команде!
+TEAM_LAST_O = Команда ^3%s^1 достигла последнего уровня!
+TEAM_LAST_S = Ваша команда достигла последнего уровня!
+
+[es]
+CHAT_TAG = ^4[GunGame]^1
+
+ANNOUNCEMENT = Este servidor está usando gungame mod. Las armas son otorgados por muertes.
+ANNOUNCEMENT_HUD = Este servidor está usando gungame mod. Las armas son otorgados por muertes.
+
+INFORMER = Arma: <arma> | Nivel: <Nivel>/<maxlevel><samelevel> | Muertes: <kills>/<needkills>^nRank: <rank> of <ranknum> | Líder: <líder> [ <arma> ]
+
+STATS_END_WINNER = %d. %s - El ganor es %d con frags
+STATS_END_PLAYER = %d. %s en el nivel %d [%s - %d/%d] con %d frags
+
+LEVEL_SELF = ^3ahora está en el nivel ^4%d^1 :: ^4%s^1
+LEVEL_SELF_LST = ^3Llegaste al último nivel!
+WINNER_SELF = ^3Sos el GANADOR!!^1
+
+LEVEL_NOW_MSG = ^3%s^1 ahora en ^4%d^1 :: ^4%s^1
+LEVEL_UP_MSG = ^3%s^1 subió al nivel ^4%d^1 :: ^4%s^1
+LEVEL_DOWN_MSG = ^3%s^1 bajó al nivel ^4%d^1 :: ^4%s^1
+
+WINNER_MSG = ^3%s^4 es el GANADOR!!!
+WINNER_HUD = %s is the WINNER ! Congratulations!
+
+WARMUP_ROUND_PREPARE = [ El juego se iniciará en %d segundo(s)! ]
+WARMUP_ROUND_DISPLAY = [ Warmup Mode: %d segundo(s) restantes ]
+WARMUP_ROUND_OVER = [ LIVE! ]
+
+REACHED_LAST_LEVEL = ^3%s^1 a alcanzado el último nivel!
+
+SKIP_LESSPLR = Usted ha omitido su nivel actual, porque no hay suficientes jugadores
+SKIP_MSG = %s subiste del nivel actual y se fue hasta el nivel %d - %s.
+
+TEAM_STR = Equipo 
+TEAM_LEVELUP_O = El equipo ^3%s^1 ahora esta en el nivel ^4%d^1 :: ^4%s^1 
+TEAM_LEVELUP_T = ^3%s^1 nivel logrado para nosotros ^4%d^1 :: ^4%s^1 
+TEAM_LEVELUP_S = Ganaste el nivel ^4%d^1 :: ^4%s^1 para su equipo 
+TEAM_WIN_O = El equipo ^3%s^1 es el GANADOR!!! 
+TEAM_WIN_T = ^3%s^1 nos han ganado! 
+TEAM_WIN_S = Has echo ganar a tu equipo! 
+TEAM_LAST_O = El equipo ^3%s^1 alcanzo el ultimo nivel! 
+TEAM_LAST_S = Su equipo llego al ultimo nivel! 

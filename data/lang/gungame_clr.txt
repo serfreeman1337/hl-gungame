@@ -1,0 +1,89 @@
+[en]
+CHAT_TAG_CLR = ^^2[GunGame]^^9
+
+LEVEL_SELF_CLR = ^^8You are now on level ^^5%d^^8 :: ^^2%s^^9
+LEVEL_SELF_LST_CLR = ^^1You reached the last level!^^9
+WINNER_SELF_CLR = ^^1You are the WINNER!!!^^9
+
+LEVEL_NOW_MSG_CLR = ^^3%s^^9 now on ^^5%d^^9 :: ^^2%s^^9
+LEVEL_UP_MSG_CLR = ^^3%s^^9 went up to level ^^5%d^^9 :: ^^2%s^^9
+LEVEL_DOWN_MSG_CLR = ^^3%s^^9 went down to level ^^5%d^^9 :: ^^2%s^^9
+
+WINNER_MSG_CLR = ^^3%s^^1 is the WINNER!!!^^9
+
+REACHED_LAST_LEVEL_CLR = ^^3%s^^1 reached the last level!^^9
+
+SKIP_LESSPLR_CLR = ^^8You skipped your current level because there are not enough players^^9.
+SKIP_MSG_CLR = ^^3%s^^9 skipped his current level and went up to level ^^5%d^^9 - ^^2%s^^9
+
+TEAM_LEVELUP_O = Team ^^3%s^^9 are now on level ^^5%d^^9 :: ^^2%s^^9
+TEAM_LEVELUP_T = ^^3%s^^9 gained level ^^5%d^^9 :: ^^2%s^^9 to us
+TEAM_LEVELUP_S = ^^8You gained level ^^5%d^^8 :: ^^2%s^^8 to your team^^9
+TEAM_WIN_O = ^^1Team %s^^1 is the WINNER!!!^^9
+TEAM_WIN_T = ^^3%s^^1 led us to victory!^^9
+TEAM_WIN_S = ^^1You led your team to victory!^^9
+TEAM_LAST_O = ^^1Team %s^^1 reached the last level!^^9
+TEAM_LAST_S = ^^1Your team reached the last level!^^9
+
+MODENABLED_CLR = ^^8GunGame Is Now Active!^^9
+MODDISABLED_CLR = ^^8GunGame Is Now Disabled!^^9
+
+[ru]
+CHAT_TAG_CLR = ^^2[GunGame]^^9
+
+LEVEL_SELF_CLR = ^^8Вы перешли на уровень ^^5%d^^8 :: ^^2%s^^9
+LEVEL_SELF_LST_CLR = ^^1Вы достигли последнего уровня!^^9
+WINNER_SELF_CLR = ^^1Вы победитель!!!^^9
+
+LEVEL_NOW_MSG_CLR = ^^3%s^^9 на уровне ^^5%d^^9 :: ^^2%s^^9
+LEVEL_UP_MSG_CLR = ^^3%s^^9 поднялся на уровень ^^5%d^^9 :: ^^2%s^^9
+LEVEL_DOWN_MSG_CLR = ^^3%s^^9 опустился на уровень ^^5%d^^9 :: ^^2%s^^9
+
+WINNER_MSG_CLR = ^^3%s^^1 ПОБЕДИТЕЛЬ!!!^^9
+
+REACHED_LAST_LEVEL_CLR = ^^3%s^^1 достиг последнего уровня!^^9
+
+SKIP_LESSPLR_CLR = ^^8Вы пропустили уровень из-за малого числа игроков^^9.
+SKIP_MSG_CLR_CLR = ^^9Из-за малого числа игроков ^^3%s^^9 перепрыгнул на уровень ^^5%d^^9 - ^^2%s^^9
+
+TEAM_LEVELUP_O_CLR = Команда ^^3%s^^9 перешла на уровень  ^^5%d^^9 :: ^^2%s^^9
+TEAM_LEVELUP_T_CLR = ^^3%s^^9 принес ^^5%d^^9 :: ^^2%s^^9 уровень вашей команде
+TEAM_LEVELUP_S_CLR = ^^8Вы принесли уровень ^^5%d^^8 :: ^^2%s^^8 вашей команде^^9
+TEAM_WIN_O_CLR = ^^1Команда %s^^1 победитель!^^9
+TEAM_WIN_T_CLR = ^^3%s^^1 принес победу вышей команде!^^9
+TEAM_WIN_S_CLR = ^^1Вы принесли победу вышей команде!^^9
+TEAM_LAST_O_CLR = ^^1Команда %s^^1 достигла последнего уровня!^^9
+TEAM_LAST_S_CLR = ^^1Ваша команда достигла последнего уровня!^^9
+
+MODENABLED_CLR = ^^8Мод включен!^^9
+MODDISABLED_CLR = ^^8Мод выключен!^^9
+
+[es]
+CHAT_TAG_CLR = ^^2[GunGame]^^9
+
+LEVEL_SELF_CLR = ^^8ahora está en el nivel ^^5%d^^8 :: ^^2%s^^9
+LEVEL_SELF_LST_CLR = ^^1Llegaste al último nivel!^^9
+WINNER_SELF_CLR = ^^1Sos el GANADOR!!^^9
+
+LEVEL_NOW_MSG_CLR = ^^3%s^^9 ahora en ^^5%d^^9 :: ^^2%s^^9
+LEVEL_UP_MSG_CLR = ^^3%s^^9 subió al nivel ^^5%d^^9 :: ^^2%s^^9
+LEVEL_DOWN_MSG_CLR = ^^3%s^^9 bajó al nivel ^^5%d^^9 :: ^^2%s^^9
+
+WINNER_MSG_CLR = ^^3%s^^1 es el GANADOR!!!^^9
+
+REACHED_LAST_LEVEL_CLR = ^^3%s^^1 a alcanzado el último nivel!^^9
+
+SKIP_LESSPLR_CLR = ^^8Usted ha omitido su nivel actual, porque no hay suficientes jugadores^^9
+SKIP_MSG_CLR = ^^3%s^^9 subiste del nivel actual y se fue hasta el nivel ^^5%d^^9 - ^^2%s^^9.
+
+TEAM_LEVELUP_O_CLR = El equipo ^^3%s^^9 ahora esta en el nivel ^^5%d^^9 :: ^^2%s^^9 
+TEAM_LEVELUP_T_CLR = ^^3%s^^9 nivel logrado para nosotros ^^5%d^^9 :: ^^2%s^^9 
+TEAM_LEVELUP_S_CLR = ^^8Ganaste el nivel ^^5%d^^8 :: ^^2%s^^8 para su equipo^^9 
+TEAM_WIN_O_CLR = ^^1El equipo %s^^1 es el GANADOR!!!^^9
+TEAM_WIN_T_CLR = ^^3%s^^1 nos han ganado!^^9 
+TEAM_WIN_S_CLR = ^^1Has echo ganar a tu equipo!^^9 
+TEAM_LAST_O_CLR = ^^1El equipo %s^^1 alcanzo el ultimo nivel!^^9 
+TEAM_LAST_S_CLR = ^^1Su equipo llego al ultimo nivel!^^9
+
+MODENABLED_CLR = ^^8GunGame Is Now Active!^^9
+MODDISABLED_CLR = ^^8GunGame Is Now Disabled!^^9
