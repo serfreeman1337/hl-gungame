@@ -60,8 +60,13 @@ enum _:playersDataStruct {
 	Trie:PLAYER_INFLICTORS,	// inflictors map
 	Trie:PLAYER_NOREFIL,	// norefil map
 	bool:PLAYER_BOT,	// is player bot
+	
+	// 2.2
+	Array:PLAYER_WEAPONSETS,
+	PLAYER_MAXLEVEL,
+	
 	#if defined AGHL_COLOR	// is player using custom client.dll
-	bool:PLAYER_AGHL
+	bool:PLAYER_AGHL,
 	#endif
 }
 
@@ -69,31 +74,30 @@ enum _:playersDataStruct {
 * Level data struct.
 */
 enum _:weaponSetStruct {
-	WSET_SHOWNAME[32],		// level name
-	WSET_KILLS,			// level required kills
-	WSET_SKIP,			// skip player
-	WSET_ICONSPRITE[32],		// level sprite
-	Array:WSET_EQUIP_ITEMS,		// equipment array
-	Trie:WSET_INFLICTORS_MAP,	// level inflictors
-	Trie:WSET_NOREFIL_MAP,		// no refil map
-	bool:WSET_BOTCANT		// whether or not this level will be skipped for bots
+	WSET_SHOWNAME[32],
+	WSET_KILLS,
+	WSET_SKIP,
+	WSET_ICONSPRITE[32],
+	Array:WSET_EQUIP_ITEMS,
+	Trie:WSET_INFLICTORS_MAP,
+	Array:WSET_INFARRAY,
+	Trie:WSET_NOREFIL_MAP,
+	bool:WSET_BOTCANT
+	
 	#if defined HLWPNMOD
-	,bool:WSET_WPNMOD		// whether or not this level has weapon mod weapon
+	,bool:WSET_WPNMOD
 	#endif
 }
 
-/**
-* Equipment data struct.
-*/
 enum _:equipStruct {
-	EQUIP_NAME[32],				// equipment classname
-	EQUIP_CLIP,				// inital clip
-	Float:EQUIP_PRIMARY_REFIL_TIME,		// refil time for primary ammo
-	Float:EQUIP_SECONDARY_REFIL_TIME,	// refil time for secondary ammo
-	EQUIP_PRIMARY_REFIL_AMMOUNT,		// refil ammount for primary ammo
-	EQUIP_SECONDARY_REFIL_AMMOUNT,		// refil ammount for secondary ammo
-	bool:EQUIP_FULL_PRIMARY,		// disable full primary ammo on spawn
-	bool:EQUIP_FULL_SECONDARY,		// disable full secondary ammo on spawn
+	EQUIP_NAME[32],
+	EQUIP_CLIP,
+	Float:EQUIP_PRIMARY_REFIL_TIME,
+	Float:EQUIP_SECONDARY_REFIL_TIME,
+	EQUIP_PRIMARY_REFIL_AMMOUNT,
+	EQUIP_SECONDARY_REFIL_AMMOUNT,
+	bool:EQUIP_FULL_PRIMARY,
+	bool:EQUIP_FULL_SECONDARY,
 }
 
 /**
@@ -143,12 +147,13 @@ native gg_get_max_level()
 
 /**
 * Retrieve level params.
-*	@param level		The level id.
+*	@param level			The level id.
 *	@param weaponSet	Level data struct array.
-*
-*	@return 		True on success or false on failure.
+*	@forPlayer			Get level data for specifed player or 0 for default
+*			
+*	@return 				True on success or false on failure.
 */
-native gg_get_level_data(level,weaponSet[weaponSetStruct])
+native gg_get_level_data(level,weaponSet[weaponSetStruct],forPlayer = 0)
 
 /**
 * Retriev player level data.
@@ -174,3 +179,6 @@ native gg_set_player_level(id,newLevel,kills)
 *	@param player	Player index.
 */
 native gg_equip_force(player)
+
+
+native gg_set_player_data(id,playerData[playersDataStruct])

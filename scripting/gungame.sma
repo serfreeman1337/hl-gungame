@@ -22,7 +22,7 @@
 /*
 * More information:
 *
-*  http://gf.hldm.org/hl-gungame/ - serfreeman1337's site
+*  http://1337.uz/hl-gungame/ - serfreeman1337's site
 *  http://aghl.ru/forum/viewtopic.php?f=19&t=702 - Russian HL and AG Community
 *  https://forums.alliedmods.net/showthread.php?t=180714 - Official AMXX forum
 */
@@ -34,11 +34,13 @@
 #include <fakemeta>
 #include <hamsandwich>
 
+#pragma dynamic 32768
+
 #define PLUGIN "Half-Life GunGame"
-#define VERSION "2.1.1"
+#define VERSION "2.2 Dev"
 #define AUTHOR "serfreeman1337"	// ICQ: 50429042
 
-#define LASTUPDATE	"01, February (02), 2016"
+#define LASTUPDATE	"05, February (02), 2016"
 
 // Enable detection and usage of color codes in notify messages
 // This is only for AGHL.ru client.dll and RCD
@@ -144,8 +146,13 @@ enum _:playersDataStruct {
 	Trie:PLAYER_INFLICTORS,
 	Trie:PLAYER_NOREFIL,
 	bool:PLAYER_BOT,
+	
+	// 2.2
+	Array:PLAYER_WEAPONSETS,
+	PLAYER_MAXLEVEL,
+	
 	#if defined AGHL_COLOR && !defined CSCOLOR
-	bool:PLAYER_AGHL
+	bool:PLAYER_AGHL,
 	#endif
 }
 
@@ -159,6 +166,7 @@ enum _:weaponSetStruct {
 	Array:WSET_INFARRAY,
 	Trie:WSET_NOREFIL_MAP,
 	bool:WSET_BOTCANT
+	
 	#if defined HLWPNMOD
 	,bool:WSET_WPNMOD
 	#endif
@@ -308,7 +316,7 @@ new Trie:weaponAmmoTrie
 new Trie:ammoMaxMap
 new Trie:autoSaveMap
 
-new Array:weaponSets
+new Array:weaponSets_Array
 
 new playersData[33][playersDataStruct]
 
@@ -325,7 +333,7 @@ new currentPlayers
 #if AMXX_VERSION_NUM < 183
 new MaxClients
 #endif
-new maxLevel
+new maxLevel_Int
 
 new bool:isEndGame = false
 new bool:isVoteStarted = false
@@ -337,7 +345,7 @@ new striper
 new Float:autoSaveTime
 
 new warmUpMode = 0
-new Array:warmUpSet
+new Array:warmUpSet_Array
 
 new cfgFileWas[30]
 
@@ -908,11 +916,11 @@ public Enable_GunGame(){
 	if(ggActive)
 		return
 	
-	if(weaponSets)
-		ArrayClear(weaponSets)
+	if(weaponSets_Array)
+		ArrayClear(weaponSets_Array)
 
-	if(warmUpSet)
-		ArrayClear(warmUpSet)
+	if(warmUpSet_Array)
+		ArrayClear(warmUpSet_Array)
 		
 	new cvarState = get_pcvar_num(cvar[CVAR_ENABLED])
 		
@@ -943,15 +951,15 @@ public Enable_GunGame(){
 	}
 	
 	// check level weapons for valid
-	if(weaponSets == Invalid_Array){
+	if(weaponSets_Array == Invalid_Array){
 		server_print("[GunGame] No active levels^n")
 		log_amx("ERROR! No active levels!")
 		
 		return
 	}
 	
-	maxLevel = ArraySize(weaponSets)
-	server_print("[GunGame] Total %d levels loaded from ^"%s^" configuration file",maxLevel,cfgFileWas)
+	maxLevel_Int = ArraySize(weaponSets_Array)
+	server_print("[GunGame] Total %d levels loaded from ^"%s^" configuration file",maxLevel_Int,cfgFileWas)
 	
 	// set hooks for players
 	
@@ -1081,6 +1089,7 @@ public plugin_natives(){
 	
 	register_native("gg_get_player_level","api_get_player_level")
 	register_native("gg_set_player_level","api_set_player_level")
+	register_native("gg_set_player_data","api_set_player_data")
 	
 	register_native("gg_equip_force","api_equip_force",true)
 }
@@ -1747,15 +1756,15 @@ public Parse_WeaponSets(buffer[],lineCount,Trie:keyTrie,&Trie:hamHooks,bool:warm
 						ucfirst(weaponSet[WSET_SHOWNAME])
 					}
 
-					if(!weaponSets && !warmUp)
-						weaponSets  = ArrayCreate(weaponSetStruct)
-					else if(!warmUpSet && warmUp)
-						warmUpSet = ArrayCreate(weaponSetStruct)
+					if(!weaponSets_Array && !warmUp)
+						weaponSets_Array  = ArrayCreate(weaponSetStruct)
+					else if(!warmUpSet_Array && warmUp)
+						warmUpSet_Array = ArrayCreate(weaponSetStruct)
 					
 					if(!warmUp)
-						ArrayPushArray(weaponSets ,weaponSet) // push the level data
+						ArrayPushArray(weaponSets_Array,weaponSet) // push the level data
 					else
-						ArrayPushArray(warmUpSet,weaponSet) // push the level data
+						ArrayPushArray(warmUpSet_Array,weaponSet) // push the level data
 					
 					return
 				}else if(strcmp(buffer,"<equip>") == 0){ // equip block start
@@ -1979,6 +1988,9 @@ public client_putinserver(id){
 		else if(isEndGame)
 			client_cmd(0,"mp3 play ^"%s^"",sound_winner)
 	}
+	
+	playersData[id][PLAYER_WEAPONSETS] = weaponSets_Array
+	playersData[id][PLAYER_MAXLEVEL] = maxLevel_Int
 }
 
 public WarmUp_Timer(data[1]){
@@ -2016,8 +2028,8 @@ public WarmUp_Timer(data[1]){
 				show_hudmessage(0,"%L",LANG_PLAYER,"WARMUP_ROUND_OVER")
 				client_cmd(0,"spk buttons/bell1.wav")
 				
-				ArrayDestroy(warmUpSet)
-				warmUpSet = Invalid_Array
+				ArrayDestroy(warmUpSet_Array)
+				warmUpSet_Array = Invalid_Array
 				
 				ExecuteForward(fwdWarmUpEnd,fwdRet)
 				
@@ -2239,14 +2251,20 @@ public On_PlayerKilled(victim,killer){
 	new inflictor = entity_get_edict(victim,EV_ENT_dmg_inflictor) // get inflictor id
 	
 	if(killer == inflictor){ // player killed by hitscan weapon
-		new wId
-		
-		if(!(wId = get_user_weapon(killer))) // can't get weapon id
-			return HAM_IGNORED
 		new weaponName[32]
 		
-		if(!get_weaponname(wId,weaponName,charsmax(weaponName)))
-			return HAM_IGNORED
+		#if !defined HLWPNMOD
+			new wId
+		
+			if(!(wId = get_user_weapon(killer))) // can't get weapon id
+				return HAM_IGNORED
+			
+			if(!get_weaponname(wId,weaponName,charsmax(weaponName)))
+				return HAM_IGNORED
+		#else
+			new weaponEnt = get_pdata_cbase(killer,modOffsets[m_pActiveItem])
+			wpnmod_get_weapon_info(weaponEnt,ItemInfo_szName,weaponName,charsmax(weaponName))
+		#endif
 			
 		if(playersData[killer][PLAYER_INFLICTORS] && !TrieKeyExists(playersData[killer][PLAYER_INFLICTORS],weaponName))
 			return HAM_IGNORED
@@ -2259,6 +2277,7 @@ public On_PlayerKilled(victim,killer){
 	}
 	
 	playersData[killer][PLAYER_KILLS] ++
+	new maxLevel = playersData[killer][PLAYER_MAXLEVEL]
 	
 	if(prolevel_music[0] && !proLevelPlayed  && playersData[killer][PLAYER_CURRENTLEVEL] == maxLevel - 1
 		&& (
@@ -2389,11 +2408,17 @@ public On_TraceAttack(victim,attacker){
 		return HAM_IGNORED
 	
 	static weaponName[32],weaponId
-	weaponId = get_user_weapon(attacker)
+	
+	#if !defined HLWPNMOD
+		weaponId = get_user_weapon(attacker)
 		
-	if(!weaponId || !get_weaponname(weaponId,weaponName,charsmax(weaponName)))
-		return HAM_SUPERCEDE
-			
+		if(!weaponId || !get_weaponname(weaponId,weaponName,charsmax(weaponName)))
+			return HAM_SUPERCEDE
+	#else
+		new weaponEnt = get_pdata_cbase(attacker,modOffsets[m_pActiveItem])
+		weaponId = wpnmod_get_weapon_info(weaponEnt,ItemInfo_szName,weaponName,charsmax(weaponName))
+	#endif
+	
 	if(playersData[attacker][PLAYER_INFLICTORS] && !TrieKeyExists(playersData[attacker][PLAYER_INFLICTORS],weaponName)){
 		new victimOrigin[3]
 		get_user_origin(victim,victimOrigin)
@@ -2432,6 +2457,8 @@ public Equip_PlayerWithWeapon(const id){
 	
 	if(isEndGame)
 		return
+		
+	new maxLevel = playersData[id][PLAYER_MAXLEVEL]
 	
 	if(playersData[id][PLAYER_CURRENTLEVEL] >= maxLevel){ // do endgame stuff
 		endgame(id)
@@ -2492,9 +2519,12 @@ public Equip_PlayerWithWeapon(const id){
 		}
 	}
 	
+	// 2.2
+	new Array:weaponSets = playersData[id][PLAYER_WEAPONSETS]
+	
 	// get level wepons details
 	new weaponSet[weaponSetStruct]
-	ArrayGetArray(warmUpMode == 2 ? weaponSets : warmUpSet,playersData[id][PLAYER_CURRENTLEVEL],weaponSet)
+	ArrayGetArray(warmUpMode == 2 ? weaponSets : warmUpSet_Array,playersData[id][PLAYER_CURRENTLEVEL],weaponSet)
 	
 	if(!playersData[id][PLAYER_BOT]){
 		if(playersData[id][PLAYER_LASTLEVEL] == playersData[id][PLAYER_CURRENTLEVEL] && warmUpMode == 2){
@@ -2524,8 +2554,12 @@ public Equip_PlayerWithWeapon(const id){
 		new bool:levelSkipped
 		
 		if(!isTeamPlay){ // no skip with teamplay
-			while(weaponSet[WSET_SKIP] && currentPlayers < weaponSet[WSET_SKIP] && playersData[id][PLAYER_CURRENTLEVEL] > playersData[id][PLAYER_LASTLEVEL]
-				|| playersData[id][PLAYER_BOT] && weaponSet[WSET_BOTCANT]){ // skip level for bot or on low plr count
+			while(weaponSet[WSET_SKIP] && 
+				currentPlayers < weaponSet[WSET_SKIP] && 
+				playersData[id][PLAYER_CURRENTLEVEL] > playersData[id][PLAYER_LASTLEVEL] || 
+				playersData[id][PLAYER_BOT] && 
+				weaponSet[WSET_BOTCANT])
+			{ // skip level for bot or on low plr count
 				if(playersData[id][PLAYER_ICON]){
 						StatusIcon_Display(id,3) // go nuts, when the bass go boom
 						playersData[id][PLAYER_ICON][0] = 0
@@ -2730,6 +2764,10 @@ public Equip_PlayerWithWeapon(const id){
 Draw_LevelsInHud(id,num){
 	new weaponSet[weaponSetStruct]
 	
+	// 2.2
+	new maxLevel = playersData[id][PLAYER_MAXLEVEL]
+	new Array:weaponSets = playersData[id][PLAYER_WEAPONSETS]
+	
 	for(new i = playersData[id][PLAYER_CURRENTLEVEL],equipItem[equipStruct] ; 
 		i < playersData[id][PLAYER_CURRENTLEVEL] + num && i < maxLevel; 
 		i++){
@@ -2819,18 +2857,29 @@ public Add_PlayerWeapon(id,equipItem[equipStruct],weaponSet[weaponSetStruct]){
 				TrieSetCell(weaponSet[WSET_NOREFIL_MAP],ammoKey,1)
 			}
 			
+			new wId = get_weaponid(equipItem[EQUIP_NAME])
+			
+			#if defined HLWPNMOD
+			wId = wpnmod_get_weapon_info(equipEnt,ItemInfo_iId)
+			#endif
+			
 			Set_RefilTask(id,
 				weaponAmmo[WAMMO_PRIMARY_AMMOID + i],
 				weaponAmmo[WAMMO_PRIMARY_MAXAMMO + i],
 				equipItem[EQUIP_PRIMARY_REFIL_AMMOUNT + i],
 				Float:equipItem[EQUIP_PRIMARY_REFIL_TIME + i],
-				get_weaponid(equipItem[EQUIP_NAME])
+				wId
 			)
 		}
 	}
 	
 	if(equipItem[EQUIP_CLIP] > -1)
-		set_pdata_int(equipEnt,modOffsets[m_iClip],equipItem[EQUIP_CLIP],extraoffset_weapon)
+	{
+		if(get_pdata_int(equipEnt,modOffsets[m_iClip],extraoffset_weapon) != -1)
+			set_pdata_int(equipEnt,modOffsets[m_iClip],equipItem[EQUIP_CLIP],extraoffset_weapon)
+		else
+			set_pdata_int(id, modOffsets[m_rgAmmo] + weaponAmmo[WAMMO_PRIMARY_AMMOID] - modOffsets[offsetAmmoDiff],equipItem[EQUIP_CLIP])
+	}
 }
 
 //
@@ -3054,6 +3103,9 @@ public gg_notify_msg(id,notifyId){
 	
 	new teamName[16]
 	new teamId = get_user_team(id,teamName,charsmax(teamName))
+	
+	// 2.2
+	new Array:weaponSets = playersData[id][PLAYER_WEAPONSETS]
 	
 	// check for teammode messages
 	if(get_pcvar_num(cvar[CVAR_TEAMPLAY])){
@@ -3378,6 +3430,9 @@ public Show_HudInformer(taskId){
 		
 	new message[312],tmp[30]
 	formatex(message,charsmax(message),"%L",id,"INFORMER")
+	
+	// 2.2
+	new maxLevel = playersData[id][PLAYER_MAXLEVEL]
 	
 	for(new i ;  i < informerDisplay ; ++i){
 		if(informerBitSum & (1 << i)){
@@ -3942,10 +3997,33 @@ stock UTIL_TeleportEffectForPlayer(id){
 //
 // Returns max level
 //
-// native gg_get_max_level()
+// native gg_get_max_level(forPlayer = 0)
 //
 public api_get_max_level(plugin,params)
+{
+	new maxLevel = maxLevel_Int
+	new player 
+	
+	if(params)
+		player = get_param(1)
+	
+	if(player)
+	{
+		if(!(0 < player <= MaxClients)){
+			log_error(AMX_ERR_NATIVE,"player out of bounds (%d)",player)
+			return false
+		}
+		
+		if(!is_user_connected(player)){
+			log_error(AMX_ERR_NATIVE,"player %d is not in game",player)
+			return false
+		}
+		
+		maxLevel = playersData[player][PLAYER_MAXLEVEL]
+	}
+	
 	return maxLevel
+}
 	
 //
 // Returns level data
@@ -3953,15 +4031,35 @@ public api_get_max_level(plugin,params)
 // native gg_get_level_data(level,weaponSet[weaponSetStruct])
 //	@level - level num for which you want to get info
 //	@weaponSet - array for information
+//	@forPlayer - player id to get level data for or 0 for default weapon set
+//
 //	@return - false or true
 //
 public api_get_level_data(plugin,params){
-	if(params != 2){
+	if(params  < 2){
 		log_error(AMX_ERR_NATIVE,"bad arguments num, expected 2, passed %d",params)
 		return false
 	}
 	
 	new level = get_param(1)
+	
+	new maxLevel = maxLevel_Int
+	new Array:weaponSets = weaponSets_Array
+	
+	if(params >= 3)
+	{
+		new id = get_param(3)
+		
+		if(!is_user_connected(id))
+		{
+			log_error(AMX_ERR_NATIVE,"invalid player index (%d)",id)
+			return false
+		}
+		
+		// 2.2
+		maxLevel = playersData[id][PLAYER_MAXLEVEL]
+		weaponSets = playersData[id][PLAYER_WEAPONSETS]
+	}
 	
 	if(!(0 <= level < maxLevel)){
 		log_error(AMX_ERR_NATIVE,"level out of bounds (%d)",level)
@@ -4007,6 +4105,31 @@ public api_get_player_level(plugin,params){
 	return playersData[player][PLAYER_CURRENTLEVEL]
 }
 
+// native gg_set_player_data(id,playerData[playersDataStruct])
+public api_set_player_data(plugin,params)
+{
+	if(params != 2){
+		log_error(AMX_ERR_NATIVE,"bad arguments num, expected 2, passed %d",params)
+		return -1
+	}
+	
+	new player = get_param(1)
+	
+	if(!(0 < player <= MaxClients)){
+		log_error(AMX_ERR_NATIVE,"player out of bounds (%d)",player)
+		return false
+	}
+	
+	if(!is_user_connected(player)){
+		log_error(AMX_ERR_NATIVE,"player %d is not in game",player)
+		return false
+	}
+	
+	get_array(2,playersData[player],playersDataStruct)
+	
+	return true
+}
+
 //
 // Sets player level
 //
@@ -4035,6 +4158,10 @@ public api_set_player_level(plugin,params){
 	}
 	
 	new level = get_param(2)
+	
+	// 2.2
+	new maxLevel = playersData[player][PLAYER_MAXLEVEL]
+	new Array:weaponSets = playersData[player][PLAYER_WEAPONSETS]
 	
 	if(!(0 <= level < maxLevel)){
 		log_error(AMX_ERR_NATIVE,"level out of bounds (%d)",level)
@@ -4108,5 +4235,5 @@ public api_equip_force(id){
 *	Steam: http://steamcommunity.com/id/serfreeman1337/
 *	ICQ: 50429042
 *	E-Mail: serfreeman1337@yandex.com
-*	Site: http://gf.hldm.org/
+*	Site: http://1337.uz/
 */
